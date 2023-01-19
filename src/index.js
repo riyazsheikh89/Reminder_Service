@@ -1,9 +1,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const cron = require('node-cron')
-
 const {PORT} = require('./config/serverConfig');
-const {sendBasicEmail} = require('./services/email-service');
+const Jobs = require('./utils/job');
+const TicketController = require('./controllers/ticket-controller');
 
 const setupAndStartServer = () => {
 
@@ -11,19 +11,12 @@ const setupAndStartServer = () => {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
 
+    app.post('/api/v1/tickets', TicketController.create);
+
     app.listen(PORT, () => {
         console.log(`Server Started on PORT: ${PORT}`);
+        Jobs();
 
-        /* sendBasicEmail(
-            'reminderservice.airline@gmail.com',
-            'wbriyaz75@gmail.com',
-            'testing email reminder service',
-            'this is a test mail for airline reminder service, hope it will work fine, thnk you!'
-        ) */
-
-        cron.schedule('*/1 * * * *', () => {
-            console.log('running a task every two minutes');
-          });
     })
 }
 
